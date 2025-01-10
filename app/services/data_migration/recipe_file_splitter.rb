@@ -36,28 +36,13 @@ module DataMigration
     end
 
     def process_hash_ingredient(ingredient)
-      if ingredient['name'].to_s.empty? && !ingredient['details'].to_s.empty?
-        ingredient['name'] = ingredient['details']
-        ingredient['details'] = ''
-      end
+      ingredient['name'] = ingredient['name'].gsub(/\bor\b\s+\b(?:#{UNITS})\b/i, '').strip if ingredient['name']
 
-      if match = ingredient['name'].match(/^(\d+)\s*\((\d+\s*(?:#{UNITS}))\)\s*(#{UNITS}s?)\s+(.+)/i)
-        quantity = match[1]
-        size = match[2]
-        unit = match[3]
-        name = match[4]
-
-        ingredient['name'] = name
-        ingredient['quantity'] = "#{quantity} #{size} #{unit}"
-        ingredient['details'] = ''
-      elsif match = ingredient['name'].match(/^(\d+)\s*(#{UNITS}s?)\s+(.+)/i)
-        quantity = match[1]
-        unit = match[2]
-        name = match[3]
-
-        ingredient['name'] = name
-        ingredient['quantity'] = "#{quantity} #{unit}"
-        ingredient['details'] = ''
+      if match = ingredient['quantity']&.match(%r{^([\d\s/½⅓¼⅔¾⅛]+)\s*(#{UNITS})$}i)
+        ingredient['quantity'] = match[1].strip
+        ingredient['measurement'] = match[2].strip
+      else
+        ingredient['measurement'] = nil
       end
 
       ingredient
@@ -65,10 +50,11 @@ module DataMigration
 
     def parse_string_ingredient(ingredient)
       ingredient = ingredient.gsub(/\([^)]*\)/, '').strip
+      ingredient = ingredient.gsub(/\bor\b\s+\b(?:#{UNITS})\b/i, '').strip
 
       if match = ingredient.match(%r{^([\d\s/½⅓¼⅔¾⅛]+)\s*(#{UNITS}s?)\s+(.+)}i)
         quantity = match[1].strip
-        unit = match[2].strip
+        measurement = match[2].strip
         remaining = match[3].strip
 
         name_and_details = remaining.split(/,/, 2)
@@ -77,7 +63,8 @@ module DataMigration
 
         {
           'name' => name,
-          'quantity' => [quantity, unit].join(' ').strip,
+          'quantity' => quantity,
+          'measurement' => measurement,
           'details' => details
         }
       elsif match = ingredient.match(/^(\d+)\s*(.+?),\s*(.+)/i)
@@ -88,6 +75,7 @@ module DataMigration
         {
           'name' => name,
           'quantity' => quantity,
+          'measurement' => nil,
           'details' => details
         }
       elsif match = ingredient.match(/^(\d+)\s+(.+)/i)
@@ -97,13 +85,15 @@ module DataMigration
         {
           'name' => name,
           'quantity' => quantity,
+          'measurement' => nil,
           'details' => ''
         }
       else
         {
           'name' => ingredient.strip,
-          'quantity': '',
-          'details': ''
+          'quantity' => nil,
+          'measurement' => nil,
+          'details' => ''
         }
       end
     end

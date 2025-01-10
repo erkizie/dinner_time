@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-splitter_output_path = Rails.root.join('db/seeds/recipes-measurements.json')
+splitter_output_path = Rails.root.join('db/seeds/recipes.json')
 
 if File.exist?(splitter_output_path)
   puts "File #{splitter_output_path} already exists. Skipping RecipeFileSplitter."
