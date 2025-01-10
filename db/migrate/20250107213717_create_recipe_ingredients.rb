@@ -6,6 +6,7 @@ class CreateRecipeIngredients < ActiveRecord::Migration[7.2]
       t.references :recipe, null: false, foreign_key: true
       t.references :ingredient, null: false, foreign_key: true
       t.string :quantity
+      t.string :measurement
       t.string :details
 
       t.timestamps

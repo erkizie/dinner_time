@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_07_213717) do
     t.bigint "recipe_id", null: false
     t.bigint "ingredient_id", null: false
     t.string "quantity"
+    t.string "measurement"
     t.string "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

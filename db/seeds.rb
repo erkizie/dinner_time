@@ -9,5 +9,5 @@ else
   DataMigration::RecipeFileSplitter.new(Rails.root.join('db/seeds/recipes-en.json')).call
 end
 
-# puts 'Running RecipeSeeder to populate the database...'
-# DataMigration::RecipeSeeder.new(splitter_output_path).call
+puts 'Running RecipeSeeder to populate the database...'
+DataMigration::RecipeSeeder.new(splitter_output_path).call

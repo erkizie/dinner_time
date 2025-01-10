@@ -11,6 +11,7 @@ end
 #  recipe_id     :bigint           not null
 #  ingredient_id :bigint           not null
 #  quantity      :string
+#  measurement   :string
 #  details       :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null

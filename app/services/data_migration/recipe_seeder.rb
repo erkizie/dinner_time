@@ -37,6 +37,7 @@ module DataMigration
           recipe: recipe,
           ingredient: ingredient,
           quantity: ingredient_data['quantity'],
+          measurement: ingredient_data['measurement'],
           details: ingredient_data['details']
         )
       end
