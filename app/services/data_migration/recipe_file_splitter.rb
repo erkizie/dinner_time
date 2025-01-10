@@ -50,11 +50,11 @@ module DataMigration
 
     def parse_string_ingredient(ingredient)
       ingredient = ingredient.gsub(/\([^)]*\)/, '').strip
-      ingredient = ingredient.gsub(/\bor\b\s+\b(?:#{UNITS})\b/i, '').strip
+      ingredient = ingredient.gsub(/\s+or\s+(bottle|can|jar|box|pkg|package)\b/i, '').strip
 
-      if match = ingredient.match(%r{^([\d\s/½⅓¼⅔¾⅛]+)\s*(#{UNITS}s?)\s+(.+)}i)
+      if match = ingredient.match(%r{^([\d\s/½⅓¼⅔¾⅛]+)\s*(#{UNITS}s?)?\s*(.+)}i)
         quantity = match[1].strip
-        measurement = match[2].strip
+        unit = match[2]&.strip || nil
         remaining = match[3].strip
 
         name_and_details = remaining.split(/,/, 2)
@@ -64,34 +64,23 @@ module DataMigration
         {
           'name' => name,
           'quantity' => quantity,
-          'measurement' => measurement,
+          'measurement' => unit,
           'details' => details
         }
-      elsif match = ingredient.match(/^(\d+)\s*(.+?),\s*(.+)/i)
-        quantity = match[1].strip
-        name = match[2].strip
-        details = match[3].strip
+      elsif match = ingredient.match(/^(.+?),\s*(.+)/i)
+        name = match[1].strip
+        details = match[2].strip
 
         {
           'name' => name,
-          'quantity' => quantity,
+          'quantity' => '',
           'measurement' => nil,
           'details' => details
-        }
-      elsif match = ingredient.match(/^(\d+)\s+(.+)/i)
-        quantity = match[1].strip
-        name = match[2].strip
-
-        {
-          'name' => name,
-          'quantity' => quantity,
-          'measurement' => nil,
-          'details' => ''
         }
       else
         {
           'name' => ingredient.strip,
-          'quantity' => nil,
+          'quantity' => '',
           'measurement' => nil,
           'details' => ''
         }

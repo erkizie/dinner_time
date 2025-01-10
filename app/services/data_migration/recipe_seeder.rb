@@ -33,13 +33,23 @@ module DataMigration
       recipe_data['ingredients'].each do |ingredient_data|
         ingredient = Ingredient.find_or_create_by!(name: ingredient_data['name'])
 
-        RecipeIngredient.find_or_create_by!(
-          recipe: recipe,
-          ingredient: ingredient,
-          quantity: ingredient_data['quantity'],
-          measurement: ingredient_data['measurement'],
-          details: ingredient_data['details']
-        )
+        recipe_ingredient = RecipeIngredient.find_by(recipe: recipe, ingredient: ingredient)
+
+        if recipe_ingredient
+          if recipe_ingredient.quantity.present? && ingredient_data['quantity'].present?
+            recipe_ingredient.update!(
+              quantity: "#{recipe_ingredient.quantity} + #{ingredient_data['quantity']}"
+            )
+          end
+        else
+          RecipeIngredient.create!(
+            recipe: recipe,
+            ingredient: ingredient,
+            quantity: ingredient_data['quantity'],
+            measurement: ingredient_data['measurement'],
+            details: ingredient_data['details']
+          )
+        end
       end
     end
   end
