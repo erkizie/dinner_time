@@ -19,5 +19,5 @@ end
 group :development do
   gem 'annotate'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
-  gem 'pry', '~> 0.14.1'
+  gem 'pry', '~> 0.15.2'
 end
