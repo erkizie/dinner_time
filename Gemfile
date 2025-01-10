@@ -11,13 +11,16 @@ gem 'rack-cors'
 gem 'rails', '~> 7.2.2', '>= 7.2.2.1'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
-group :test do
-  gem 'rspec'
+group :development, :test do
+  gem 'factory_bot_rails', '~> 6.0'
+  gem 'faker', '~> 2.20'
+  gem 'pry', '~> 0.14.1'
+  gem 'pry-byebug'
+  gem 'pry-rails'
   gem 'rspec-rails', '~> 6.0'
 end
 
 group :development do
   gem 'annotate'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
-  gem 'pry', '~> 0.14.1'
 end
