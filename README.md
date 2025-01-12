@@ -129,8 +129,6 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
    rspec
    ```
 
-2. Ensure all tests pass before proceeding.
-
 ---
 
 ## API Endpoints
