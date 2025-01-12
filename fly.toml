@@ -1,0 +1,11 @@
+app = "dinner-time-app"
+
+[build]
+  builder = "heroku/buildpacks:20"
+
+[env]
+  RAILS_ENV = "production"
+  SECRET_KEY_BASE = "your-secret-key-base"
+
+[experimental]
+  cmd = ["bundle", "exec", "puma", "-C", "config/puma.rb"]
