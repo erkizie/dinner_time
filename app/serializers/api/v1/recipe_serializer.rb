@@ -17,7 +17,7 @@ class Api::V1::RecipeSerializer
       cuisine: @recipe.cuisine,
       category: @recipe.category,
       author: @recipe.author,
-      ingredients: @recipe.recipe_ingredients.map do |ri|
+      ingredients: @recipe.recipe_ingredients.includes(:ingredient).map do |ri|
         {
           quantity: ri.quantity,
           measurement: ri.measurement,
