@@ -2,7 +2,7 @@
 
 module DataMigration
   class RecipeFileSplitter
-    UNITS = /(?:cup|tablespoon|teaspoon|ounce|pound|g|ml|oz|lb|pkg|package|cups|tablespoons|teaspoons|ounces|pounds|packages|slices|large|medium|small|can|cans|bottle|bottles)/i
+    UNITS = /(?:cup|tablespoon|teaspoon|ounce|pound|g|ml|oz|lb|pkg|package|cups|tablespoons|teaspoons|ounces|pounds|packages|slices|large|medium|small|can|cans|bottle|bottles|inch)/i
     OUTPUT_FILE = Rails.root.join('db/seeds/recipes.json')
 
     def initialize(input_file_path)
@@ -36,9 +36,9 @@ module DataMigration
     end
 
     def process_hash_ingredient(ingredient)
-      ingredient['name'] = ingredient['name'].gsub(/\bor\b\s+\b(?:#{UNITS})\b/i, '').strip if ingredient['name']
+      ingredient['name'] = normalize_name(ingredient['name']) if ingredient['name']
 
-      if match = ingredient['quantity']&.match(%r{^([\d\s/½⅓¼⅔¾⅛]+)\s*(#{UNITS})$}i)
+      if match = ingredient['quantity']&.match(%r{^([\d\s/½⅓¼⅔¾⅛⅜⅝⅞.]+)\s*(#{UNITS})$}i)
         ingredient['quantity'] = match[1].strip
         ingredient['measurement'] = match[2].strip
       else
@@ -49,13 +49,13 @@ module DataMigration
     end
 
     def parse_string_ingredient(ingredient)
-      ingredient = ingredient.gsub(/\([^)]*\)/, '').strip
+      ingredient = ingredient.gsub(/\([^)]*\)/, '').strip.downcase
       ingredient = ingredient.gsub(/\s+or\s+(bottle|can|jar|box|pkg|package)\b/i, '').strip
 
-      if match = ingredient.match(%r{^([\d\s/½⅓¼⅔¾⅛]+)\s*(#{UNITS}s?)?\s*(.+)}i)
+      if match = ingredient.match(%r{^([\d\s/½⅓¼⅔¾⅛⅜⅝⅞.]+)\s*(#{UNITS}s?)?\s*(.+)}i)
         quantity = match[1].strip
         unit = match[2]&.strip || nil
-        remaining = match[3].strip
+        remaining = normalize_name(match[3].strip)
 
         name_and_details = remaining.split(/,/, 2)
         name = name_and_details[0].strip
@@ -68,7 +68,7 @@ module DataMigration
           'details' => details
         }
       elsif match = ingredient.match(/^(.+?),\s*(.+)/i)
-        name = match[1].strip
+        name = normalize_name(match[1].strip)
         details = match[2].strip
 
         {
@@ -79,12 +79,19 @@ module DataMigration
         }
       else
         {
-          'name' => ingredient.strip,
+          'name' => normalize_name(ingredient.strip),
           'quantity' => '',
           'measurement' => nil,
           'details' => ''
         }
       end
+    end
+
+    def normalize_name(name)
+      if name.match?(%r{^\d+\s*/\s*\d+\s*-inch\s+}i) || name.match?(/^\d+(\.\d+)?\s*-inch\s+/i)
+        name = name.sub(%r{^\d+\s*/\s*\d+\s*-inch\s+}i, '').sub(/^\d+(\.\d+)?\s*-inch\s+/i, '').strip
+      end
+      name.downcase
     end
   end
 end

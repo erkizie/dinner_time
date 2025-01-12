@@ -42,7 +42,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_07_213717) do
     t.string "cuisine"
     t.string "category"
     t.string "author"
-    t.string "image"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ratings"], name: "index_recipes_on_ratings"
