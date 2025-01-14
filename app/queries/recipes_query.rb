@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 class RecipesQuery
-  def initialize(ingredients:)
+  def initialize(ingredients:, page: 1, per_page: 10)
     @ingredients = ingredients
+    @page = page
+    @per_page = per_page
   end
 
   def call
@@ -26,6 +28,7 @@ class RecipesQuery
           ELSE 1
         END,
         ratings DESC"))
-      .limit(3)
+      .page(@page)
+      .per(@per_page)
   end
 end

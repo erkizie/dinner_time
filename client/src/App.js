@@ -5,33 +5,49 @@ import './App.css';
 const App = () => {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [recipes, setRecipes] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchRecipes = async (ingredients) => {
+  const fetchRecipes = async (ingredients, page = 1) => {
     try {
       const queryString = ingredients
         .map((ingredient) => `ingredients[]=${encodeURIComponent(ingredient)}`)
         .join('&');
-      const response = await fetch(`/api/v1/recipes/search?${queryString}`);
+      const response = await fetch(
+        `/api/v1/recipes/search?${queryString}&page=${page}&per_page=3`
+      );
       const data = await response.json();
 
       if (data.success) {
-        setRecipes(data.data);
+        setRecipes(data.data.recipes);
+        setCurrentPage(data.data.pagination.current_page);
+        setTotalPages(data.data.pagination.total_pages);
       } else {
         setRecipes([]);
+        setCurrentPage(1);
+        setTotalPages(1);
       }
     } catch (error) {
       console.error('Error fetching recipes:', error);
       setRecipes([]);
+      setCurrentPage(1);
+      setTotalPages(1);
     }
   };
 
   const handleIngredientsSelected = (ingredientNames) => {
     setSelectedIngredients(ingredientNames);
     if (ingredientNames.length > 0) {
-      fetchRecipes(ingredientNames);
+      fetchRecipes(ingredientNames, 1);
     } else {
       setRecipes([]);
+      setCurrentPage(1);
+      setTotalPages(1);
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    fetchRecipes(selectedIngredients, newPage);
   };
 
   return (
@@ -77,6 +93,25 @@ const App = () => {
           <p>No recipes found. Please add ingredients to search for recipes.</p>
         )}
       </div>
+      {recipes.length > 0 && (
+        <div className="pagination">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
