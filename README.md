@@ -9,6 +9,7 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
 - **Data Seeding:** Automatically populate the database with recipes and ingredients from a JSON file.
 - **Ingredient Normalization:** Ensure ingredients are standardized and duplicates are minimized during data processing.
 - **API Endpoints:** Provide RESTful APIs to interact with recipes and ingredients.
+- **Pagination:** Enables users to browse recipes page by page with a configurable number of results per page.
 
 ---
 
@@ -156,32 +157,41 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
 **Params:**
 
 - `ingredients`: Array of ingredient names
+- `page`: Page number (default is 1)
+- `per_page`: Number of recipes per page (default is 3)
 
 **Response:**
 
 ```json
 {
   "success": true,
-  "data": [
-    {
-      "id": 1,
-      "title": "Honey Cake",
-      "cook_time": 45,
-      "prep_time": 20,
-      "ratings": 4.8,
-      "cuisine": "Dessert",
-      "category": "Cakes",
-      "author": "John Doe",
-      "ingredients": [
-        {
-          "quantity": "2",
-          "measurement": "cups",
-          "name": "flour",
-          "details": ""
-        }
-      ]
+  "data": {
+    "recipes": [
+      {
+        "id": 1,
+        "title": "Honey Cake",
+        "cook_time": 45,
+        "prep_time": 20,
+        "ratings": 4.8,
+        "cuisine": "Dessert",
+        "category": "Cakes",
+        "author": "John Doe",
+        "ingredients": [
+          {
+            "quantity": "2",
+            "measurement": "cups",
+            "name": "flour",
+            "details": ""
+          }
+        ]
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 10,
+      "total_count": 30
     }
-  ]
+  }
 }
 ```
 
@@ -194,6 +204,8 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
 2. **As a user, I want to fetch a list of all available ingredients, so that I can see the options to choose from when searching for recipes.**
 
 3. **As a developer, I want the database to be seeded with standardized recipe data, so that I can test the application reliably and showcase its features.**
+
+4. **As a user, I want to navigate through search results using pagination, so that I can explore more recipes efficiently.**
 
 ---
 
