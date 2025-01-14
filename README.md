@@ -9,7 +9,7 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
 - **Data Seeding:** Automatically populate the database with recipes and ingredients from a JSON file.
 - **Ingredient Normalization:** Ensure ingredients are standardized and duplicates are minimized during data processing.
 - **API Endpoints:** Provide RESTful APIs to interact with recipes and ingredients.
-- **Pagination:** Enables users to browse recipes page by page with a configurable number of results per page.
+- **Pagination:** Allow users to browse recipes page by page for a flexible and user-friendly experience.
 
 ---
 
@@ -157,8 +157,8 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
 **Params:**
 
 - `ingredients`: Array of ingredient names
-- `page`: Page number (default is 1)
-- `per_page`: Number of recipes per page (default is 3)
+- `page`: Current page number (default: 1)
+- `per_page`: Number of recipes per page (default: 3)
 
 **Response:**
 
@@ -188,8 +188,8 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
     ],
     "pagination": {
       "current_page": 1,
-      "total_pages": 10,
-      "total_count": 30
+      "total_pages": 3,
+      "total_count": 9
     }
   }
 }
@@ -205,7 +205,7 @@ Dinner Time App is a Ruby on Rails-based application that manages recipes and in
 
 3. **As a developer, I want the database to be seeded with standardized recipe data, so that I can test the application reliably and showcase its features.**
 
-4. **As a user, I want to navigate through search results using pagination, so that I can explore more recipes efficiently.**
+4. **As a user, I want to navigate through recipe results page by page, so I can view more results when needed.**
 
 ---
 
@@ -284,13 +284,14 @@ ORDER BY
 - Primary sort: Perfect matches first (0 for perfect, 1 for partial)
 - Secondary sort: Higher rated recipes first within each group
 
-#### 7. Limit
+#### 7. Pagination
 
-```sql
-LIMIT 3
+```ruby
+.paginate(page: @page, per_page: @per_page)
 ```
 
-- Returns maximum of 3 recipes
+- Implements pagination to allow flexible navigation through results.
+- Parameters `page` and `per_page` are used to determine the subset of results to return.
 
 ### Query Results
 
@@ -298,13 +299,12 @@ The query returns recipes in the following order:
 
 1. Perfect matches (all ingredients available) sorted by highest rating
 2. Partial matches (some ingredients available) sorted by highest rating
-3. Maximum of 3 total recipes (For sure, we can get the limit from client as an enhancement)
 
 This ensures users see:
 
 - Recipes they can make immediately with available ingredients
 - High-rated alternatives when perfect matches aren't available
-- A manageable number of options
+- A manageable number of options per page
 
 ---
 
